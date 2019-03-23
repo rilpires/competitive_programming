@@ -117,8 +117,8 @@ vector<int> ADDs;
 vector<size_t> GETs;
 
 int main(){
-    ifstream cin("entrada.txt");
-    ofstream cout("saida.txt");
+    //ifstream cin("entrada.txt");
+    //ofstream cout("saida.txt");
     string line;
     cin >> K;
     for( int i = 0 ; i < K ; i++ ){
