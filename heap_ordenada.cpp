@@ -1,8 +1,6 @@
-#include <iostream>
-#include <sstream>
-#include <fstream>
 #include <string>
 #include <vector>
+#include <iostream>
 using namespace std;
 
 struct HeapOrdenada{
@@ -21,14 +19,11 @@ struct HeapOrdenada{
         conserta_subindo( valores.size() - 1 );
     }
     inline int retira_topo(){
-        //cout << (de_minimo?"de minimo ":"de maximo ");
-        //cout << "antes de retirar topo " << toString() << endl;
         int ret = valores[0];
         valores[0] = *valores.rbegin();
         valores.pop_back();
         aux_tam = valores.size();
         conserta_descendo(valores);
-        //cout << "depois de retirar topo " << toString() << endl;
         return ret;
     }
     inline void conserta_subindo( size_t index ) {
@@ -113,70 +108,3 @@ struct HeapOrdenada{
         return ret;
     }
 };
-
-struct BlackBox{
-    HeapOrdenada heap_maximo = HeapOrdenada(false);
-    HeapOrdenada heap_minimo = HeapOrdenada(true);
-    int get_index = 0;
-    inline void ADD( int valor ){
-        if( get_index == 0 || valor > heap_maximo[0] ){
-            heap_minimo.insere(valor);
-        }else{
-            heap_maximo.insere( valor );
-            heap_minimo.insere( heap_maximo.retira_topo() );
-        }
-    }
-    inline int GET(){
-        int ret = heap_minimo[0];
-        int topo_minimo = heap_minimo.retira_topo();
-        heap_maximo.insere( topo_minimo );
-        get_index++;
-        //cout << "get " << ret << endl;
-        return ret;
-    }
-};
-
-int main(){
-    ifstream cin("entrada.txt");
-    ofstream cout("saida.txt");
-    string line;
-    int K = 0;
-    int M;
-    int N;
-    vector<int> ADDs;
-    vector<size_t> GETs;
-    
-    cin >> K;
-    for( int i = 0 ; i < K ; i++ ){
-        ADDs.clear(); 
-        GETs.clear();
-        BlackBox black_box;
-        
-        cin >> M >> N;
-        for( int j = 0 ; j < M ; j++ ){
-            int next;
-            cin >> next;
-            ADDs.push_back(next);
-        }
-        for( int j = 0 ; j < N ; j++ ){
-            size_t next;
-            cin >> next;
-            GETs.push_back(next);
-        }
-        
-        //==========
-        size_t num_ADD = 0;
-        auto get_it = GETs.begin();
-        while( get_it != GETs.end() ){
-            int valor_adicionado = ADDs[num_ADD];
-            black_box.ADD(valor_adicionado);
-            num_ADD++;
-            while( get_it != GETs.end() && *get_it == num_ADD ){
-                cout << black_box.GET() << endl;
-                get_it++;
-            }
-        }
-        if(i < K - 1)cout << endl;
-    }
-    return 0;
-}
