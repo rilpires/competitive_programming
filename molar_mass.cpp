@@ -50,9 +50,10 @@ int main(){
     
     int T;
     line_stream>>T;
+    cout.precision(3);
     for( auto t = 0 ; t < T ; t++ ){
         getline(cin,line);
-        cout << getMolarMass(line) << endl;
+        cout << fixed << getMolarMass(line) << endl;
     } 
 
 }

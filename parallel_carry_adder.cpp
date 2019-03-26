@@ -44,11 +44,16 @@ int main(){
             bool zerou = true;
             for( auto c : string_b ){
                 if(c=='1'){
-                    zerou = false;break;
+                    zerou = false;
+                    break;
                 }
             }
-            if(zerou) break;
+            if(zerou){
+                break;
+            }
         }
+        
+        if( t < T - 1) cout << endl;
 
     } 
 
