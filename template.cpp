@@ -1,3 +1,12 @@
+/*
+    Made by: Romeu I. L. Pires
+    for "Special topics in programming" course
+    in UFRJ (Universidade Federal do Rio de Janeiro),
+    on 2019.1 semester
+
+    - Problem PDF:
+        
+*/
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -9,6 +18,6 @@ int main(){
     ifstream cin("entrada.txt");
     ofstream cout("saida.txt");
     #endif
-
+    // ==========    
     
 }

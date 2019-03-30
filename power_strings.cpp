@@ -1,41 +1,52 @@
+/*
+    Made by: Romeu I. L. Pires
+    for "Special topics in programming" course
+    in UFRJ (Universidade Federal do Rio de Janeiro),
+    on 2019.1 semester
+
+    - Problem PDF:
+        https://uva.onlinejudge.org/external/102/10298.pdf
+*/
 #include <iostream>
-#include <string>
+#include <sstream>
 #include <fstream>
-#include <vector>
+#include <string>
 using namespace std;
 
-
-vector<int>& fatora( int N ){
-    vector<int> ret();
-
-    
-    return ret;
-}
-
-int largestN( string str ){
-    int fatores = fatora(str.size());
-    for( auto fator = fatores.rbegin() ; fator != fatores.rend() ; fator++ ){
-        int passo = str.size()/(*fator);
-        string candidato = str.substr(0,passo );
-        bool ta_ok = true;
-        for( i = passo ; i < str.size() ; i += passo ){
-            if( candidato != str.substr(i,passo) ){
-                ta_ok = false;
-                break;
+int powerString( const string& msg ){
+    for( int i = msg.size() ; i > 1 ; ){
+        if( msg.size() % i != 0 ){
+            i--;
+        }else{
+            int substr_size = msg.size()/i;
+            string substr = msg.substr(0, substr_size );
+            bool ok = true;
+            
+            for( int j = substr_size ; j < msg.size() ; j += substr_size )
+            if( substr != msg.substr(j,substr_size) )
+            {
+                ok = false; break;
             }
+            
+            if(ok) return i;
+            i = msg.size() / ( substr_size + 1 );
         }
-        if( ta_ok ) return passo;
     }
-    return 666;
+    return 1;
 }
-
 
 int main(){
+    #ifndef ONLINE_JUDGE
     ifstream cin("entrada.txt");
     ofstream cout("saida.txt");
+    #endif
+    // ==========    
+    
     string line;
-    while( getline(cin,line) ){
-        if( line != "." )
-            cout << largestN(line) << endl;
+    while( true ){
+        getline( cin , line );
+        if( line == "." ) break;
+        else cout << powerString(line) << endl;
     }
+    return 0;
 }
