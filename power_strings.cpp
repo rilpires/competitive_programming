@@ -11,7 +11,18 @@
 #include <sstream>
 #include <fstream>
 #include <string>
+#include <vector>
+
 using namespace std;
+
+vector<int>& preffixVector( const string& str ){
+    vector<int> ret( str.size() );
+    return ret;
+}
+
+bool hasSubstr( const string& text , const string& pattern ){
+    return true;
+}
 
 int powerString( const string& msg ){
     for( int i = msg.size() ; i > 1 ; ){

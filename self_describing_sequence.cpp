@@ -5,7 +5,7 @@
     on 2019.1 semester
 
     - Problem PDF:
-        https://uva.onlinejudge.org/external/102/p10219.pdf        
+        https://uva.onlinejudge.org/external/100/p10049.pdf
 */
 #include <iostream>
 #include <sstream>

@@ -4,8 +4,9 @@
     in UFRJ (Universidade Federal do Rio de Janeiro),
     on 2019.1 semester
 
-    - Problem PDF:
-        https://uva.onlinejudge.org/external/102/p10219.pdf        
+    - Problem PDF: 
+        https://uva.onlinejudge.org/external/105/p10532.pdf
+        
 */
 #include <iostream>
 #include <sstream>
