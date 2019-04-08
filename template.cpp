@@ -11,6 +11,7 @@
 #include <sstream>
 #include <fstream>
 #include <string>
+#include <math.h>
 using namespace std;
 
 int main(){
@@ -19,5 +20,5 @@ int main(){
     ofstream cout("saida.txt");
     #endif
     // ==========    
-    
+
 }
