@@ -11,6 +11,7 @@
 #include <sstream>
 #include <fstream>
 #include <string>
+#include <math.h>
 using namespace std;
 
 struct BigNumber{
@@ -23,5 +24,5 @@ int main(){
     ofstream cout("saida.txt");
     #endif
     // ==========    
-    
+
 }
