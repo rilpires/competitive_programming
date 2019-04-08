@@ -5,13 +5,17 @@
     on 2019.1 semester
 
     - Problem PDF:
-        https://uva.onlinejudge.org/external/102/p10219.pdf        
+        https://        
 */
 #include <iostream>
 #include <sstream>
 #include <fstream>
 #include <string>
 using namespace std;
+
+struct BigNumber{
+    
+};
 
 int main(){
     #ifndef ONLINE_JUDGE

@@ -5,22 +5,17 @@
     on 2019.1 semester
 
     - Problem PDF:
-        https://uva.onlinejudge.org/external/102/p10213.pdf
+        https://        
 */
 #include <iostream>
 #include <sstream>
 #include <fstream>
 #include <string>
-#include <math.h>
 using namespace std;
 
-int howMany( int N ){
-    if( N % 2 == 0 ){
-        return N + (N/2) * ( pow(2,N-3) ) ;
-    }else{
-        return -1;
-    }
-}
+struct BigNumber{
+    
+};
 
 int main(){
     #ifndef ONLINE_JUDGE
@@ -28,11 +23,18 @@ int main(){
     ofstream cout("saida.txt");
     #endif
     // ==========
-
-    int N, T;
-    cin >> T;
-    for( int t = 0 ; t < T ; t++ ){
-        cin >> N;
-        cout << howMany(N) << endl;
+    int T = rand()%100;
+    while( T-- ){
+        int N = 1 + rand() % 50;
+        int M = rand() % N;
+        cout << N << " " << M << endl;
+        for( int n = 0 ; n < N ; n++ )
+            cout << rand()%N << " ";
+        cout << endl;
+        for( int m = 0 ; m < M ; m++ )
+            cout << rand()%N << " ";
+        cout << endl;
+        
     }
+    
 }
