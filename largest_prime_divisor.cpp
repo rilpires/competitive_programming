@@ -5,7 +5,7 @@
     on 2019.1 semester
 
     - Problem PDF:
-        https://uva.onlinejudge.org/external/102/p10219.pdf        
+        https://uva.onlinejudge.org/external/114/11466.pdf        
 */
 #include <iostream>
 #include <sstream>
@@ -29,9 +29,6 @@ void fillPrimes( size_t crivo_size ){
             for( size_t j = i + (i+1) ; j < crivo_size ; j += (i+1) ) crivo[j] = 1;
         }
     }
-
-    //for( size_t i = 0 ; i < 100 ; i++ ) if(crivo[i]==0)
-        //cout << i << " , " << crivo[i] << endl;
 }
 
 // returns -1 if prime 
@@ -55,11 +52,19 @@ long long largestPrime( long long N ){
         while( N % shortest == 0 ) N = N / shortest;
         shortest = shortestPrime(N);
         if( N > 2 && shortest == -1 ){
+            // Is the bigger part prime ?
             return N;
-        }else{
+        }else if( N == 1){
+            return -1;
+        }
+        else{
+
+            // Is the bigger part with only one prime?
             long long temp = N;
             while ( temp % shortest == 0) temp = temp/shortest;
-            if(shortestPrime(N) == shortest) return shortest;
+            if( temp == 1 ) return shortest;
+            
+            // More than 1 prime in bigger part
             return largestPrime(N);
         }
     }

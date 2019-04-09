@@ -5,7 +5,7 @@
     on 2019.1 semester
 
     - Problem PDF:
-        https://        
+        https://      
 */
 #include <iostream>
 #include <sstream>
@@ -14,15 +14,11 @@
 #include <math.h>
 using namespace std;
 
-struct BigNumber{
-    
-};
 
 int main(){
     #ifndef ONLINE_JUDGE
     ifstream cin("entrada.txt");
     ofstream cout("saida.txt");
     #endif
-    // ==========    
-
+    // ==========
 }
