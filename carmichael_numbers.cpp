@@ -18,8 +18,6 @@ using namespace std;
 
 vector<int> crivo;
 vector<int> primes;
-set<int> fermat_pass;
-set<int> carmichaels;
 
 void fillCrivo( size_t crivo_size ){
     crivo.clear();crivo.resize(crivo_size);
@@ -34,28 +32,40 @@ void fillCrivo( size_t crivo_size ){
     }
 }
 
-int fermatModule( int a , int n ){
-    long long left_side = 1;
-    for( size_t i = 1 ; i <= n ; i++ ){
-        left_side = (left_side*a)%n;
-        if( i > 1 && i < n && left_side % n == a % n ){
-            int new_n = (n-1)%(i-1); 
-            if( new_n == 0 ) return left_side;
-            return fermatModule( a , new_n );
+int fermatModule( int a , int N ){
+    long long ret = 1;
+    long long factor = a;
+    int expoent = N;
+    while( expoent > 0 ){
+        if( expoent % 2 == 1 ){
+            ret = (ret*factor)%N;
+            expoent--;
+        }
+        else {
+            factor = (factor*factor)%N;
+            expoent = expoent/2;
         }
     }
-    return left_side%n;
+    return ret;
 }
-int fermatPeriod( int a , int n ){
-    long long left_side = 1;
-    for( size_t i = 1 ; i <= n ; i++ ){
-        left_side = (left_side*a)%n;
-        if( i > 1 && i < n && left_side % n == a % n ){
-            return i;
+
+bool isCarmichael( int n ){
+    if( crivo[n-1] == 1 ){
+        bool passed = true;
+        int coprimes_passed = 0;
+        for( int a = 2 ; a < n  ; a++ )
+        {
+            coprimes_passed++;
+            if( fermatModule(a,n) != a ){
+                passed = false;
+                break;
+            }
         }
+        if( passed ) return true;
     }
-    return left_side%n;
+    return false;
 }
+
 
 int main(){
     #ifndef ONLINE_JUDGE
@@ -63,21 +73,14 @@ int main(){
     ofstream cout("saida.txt");
     #endif
     // ==========
-    fillCrivo( 99999 );
-    for( int a = 2 ; a < 65000 ; a++ ){
-        int a_period = 1;
-        for( int n = 2 ; n < 65000 ; n++ ){
-            
-        }
-    }
+    fillCrivo( 66666 );
     long long N;
     while( cin >> N && N != 0 ){
-            if( carmichaels.find(N) != carmichaels.end() )
-                cout << "The number " << N << " is a Carmichael number." << endl;
-            else
-                cout << N << " is normal." << endl;
-        }
-
+        if( isCarmichael(N) )
+            cout << "The number " << N << " is a Carmichael number." << endl;
+        else
+            cout << N << " is normal." << endl;
+        
     }
     return 0;
 }
