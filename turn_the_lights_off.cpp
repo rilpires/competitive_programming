@@ -35,7 +35,7 @@ void clickGrid( vector<char>& grid , short position ){
     }
 }
 
-void backtracking( const vector<char>& grid , const vector<short>& solution , vector< vector<short> >& all_solutions )
+void backtracking( vector<char>& grid , vector<short>& solution , vector< vector<short> >& all_solutions )
 {
     if( solution.size() == 100 ){
         all_solutions.push_back( solution );
@@ -49,39 +49,35 @@ void backtracking( const vector<char>& grid , const vector<short>& solution , ve
         if( row == 9 && column > 0 ) new_definitives.push_back( row*10 + (column-1) );
         if( row == 9 && column == 9 ) new_definitives.push_back( 99 );
 
+        bool valid_solution;
         // No click
-        auto new_solution_A = vector<short>(solution);
-        auto new_grid_A = vector<char>(grid);
-        new_solution_A.push_back(0);
-        bool valid_solution_A = true;
+        solution.push_back(0);
+        valid_solution = true;
         for( auto pos : new_definitives ){
-            if( new_grid_A[pos] == 'O' )
-            {
-                valid_solution_A = false;
+            if( grid[pos] == 'O' ){
+                valid_solution = false;
                 break;
             }
         }
+        if( valid_solution )
+            backtracking( grid , solution , all_solutions);
+        solution.pop_back();
 
         // Clicking
-        vector<short> new_solution_B = vector<short>(solution);
-        vector<char> new_grid_B = vector<char>(grid);
-        new_solution_B.push_back(1);
-        clickGrid(new_grid_B,solution.size());
-        bool valid_solution_B = true;
+        clickGrid(grid,solution.size());
+        solution.push_back(1);
+        valid_solution = true;
         for( auto pos : new_definitives ){
-            if( new_grid_B[pos] == 'O' )
-            {
-                valid_solution_B = false;
+            if( grid[pos] == 'O' ){
+                valid_solution = false;
                 break;
             }
         }
+        if( valid_solution )
+            backtracking( grid , solution , all_solutions);
 
-        if( valid_solution_A ){
-            backtracking( new_grid_A , new_solution_A , all_solutions);
-        }
-        if( valid_solution_B ){
-            backtracking( new_grid_B , new_solution_B , all_solutions);
-        }
+        solution.pop_back();
+        clickGrid(grid,solution.size());
 
     }
 }
@@ -103,6 +99,8 @@ int main(){
         solution.clear();
         all_solutions.clear();
         min_presses = 999;
+
+
         for( int i = 0 ; i < 100 ; i++ ){
             cin >> c;
             grid.push_back(c);
