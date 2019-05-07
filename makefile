@@ -1,8 +1,8 @@
 CPP = g++
-OBJECT = a.out
+OBJECT = obj
 OPTIONS = -std=c++11 -lm -lcrypt -pipe -O2 -Wall
 
 %: %.cpp
 	@clear
-	@g++ $(OPTIONS) -o $(OBJECT) $<
-	@./$(OBJECT)
+	@$(CPP) -g -Wall $(OPTIONS) -o $(OBJECT) $<
+	@./$(OBJECT) < entrada.txt > saida.txt
