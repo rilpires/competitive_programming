@@ -10,8 +10,9 @@ using namespace std;
 // 0 BARBARY
 // 1 BUCCANEER
 struct PirateLand{
+    enum { NO_INTERSECTION , HALF_INSIDE , FULL_INSIDE , FULL_OUTSIDE };
     size_t N = 0;
-    size_t actual_begin , tree_max_size;
+    size_t vector_begin , tree_max_size;
     size_t limite_esq , limite_dir;
     vector<int> nodes;
 
@@ -22,9 +23,9 @@ struct PirateLand{
         size_t menor_po2_suficiente = 1;
         while( menor_po2_suficiente < N)
             menor_po2_suficiente *= 2;
-        actual_begin = menor_po2_suficiente - 1;
+        vector_begin = menor_po2_suficiente - 1;
         tree_max_size = 2*menor_po2_suficiente-1;
-        nodes = vector<int>(actual_begin);
+        nodes = vector<int>(vector_begin);
 
         while(!insercoes.empty())
         {
@@ -42,13 +43,13 @@ struct PirateLand{
         size_t dir = 2*index_raiz + 2;
         nodes[index_raiz] = 0;
         if( esq < nodes.size() ){
-            if( esq < actual_begin )
+            if( esq < vector_begin )
                 consertaDescendo(esq);
             nodes[index_raiz] += nodes[esq];
             
         }
         if( dir < nodes.size() ){
-            if( dir < actual_begin )
+            if( dir < vector_begin )
                 consertaDescendo(dir);
             nodes[index_raiz] += nodes[dir];
         }
@@ -64,26 +65,28 @@ struct PirateLand{
 
 
     void seta1( size_t init , size_t end ){
-        init = actual_begin + init;
-        end = actual_begin + end;
+        init = vector_begin + init;
+        end = vector_begin + end;
         limite_esq = init;
         limite_dir = end;
         size_t pai_comum = pegaPaiComum(init,end); 
         setaTudo1( pai_comum );
+        consertaDescendo( pai_comum );
         consertaSubindo( pai_comum );
     }
     void seta0( size_t init , size_t end ){
-        init = actual_begin + init;
-        end = actual_begin + end;
-        for( auto i = init ; i <= end ; i++ )
-            nodes[i] = 0;
+        init = vector_begin + init;
+        end = vector_begin + end;
+        limite_esq = init;
+        limite_dir = end;
         size_t pai_comum = pegaPaiComum(init,end); 
-        consertaDescendo(pai_comum);
-        consertaSubindo(pai_comum);
+        setaTudo1( pai_comum , true );
+        consertaDescendo( pai_comum );
+        consertaSubindo( pai_comum );
     }
     void flipa( size_t init , size_t end ){
-        init = actual_begin + init;
-        end = actual_begin + end;
+        init = vector_begin + init;
+        end = vector_begin + end;
         for( auto i = init ; i <= end ; i++ )
             nodes[i] = !nodes[i];
         size_t pai_comum = pegaPaiComum(init,end);
@@ -91,8 +94,8 @@ struct PirateLand{
         consertaSubindo(pai_comum);
     }
     int somatorio( size_t init , size_t end ){
-        init = actual_begin + init;
-        end = actual_begin + end;
+        init = vector_begin + init;
+        end = vector_begin + end;
         limite_esq = init;
         limite_dir = end;
         return pegaSomatorio( 0 );
@@ -106,20 +109,21 @@ struct PirateLand{
         else return pegaPaiComum(pai_esq,pai_dir);
     }
     inline int quantoDentro( pair<size_t,size_t> range ) const{
-        if( range.first >= actual_begin 
+        if( range.first >= vector_begin 
         && range.first >= limite_esq 
         && range.first <= limite_dir ) 
             return 2;
         size_t meu_limite_esq = range.first;
         size_t meu_limite_dir = range.second;
-        if( meu_limite_esq >= limite_esq && meu_limite_dir <= limite_dir){
-            return 2;
-        }else if(!(meu_limite_dir < limite_esq || meu_limite_esq > limite_dir)){
-            return 1;
+        if( meu_limite_esq > limite_dir || meu_limite_dir < limite_esq){
+            return NO_INTERSECTION;
+        }else if( meu_limite_dir <= limite_dir && meu_limite_esq >= limite_esq ){
+            return FULL_INSIDE;
+        } else if( meu_limite_dir >= limite_dir && meu_limite_esq <= limite_esq ){
+            return FULL_OUTSIDE;
         } else{
-            return 0;
+            return HALF_INSIDE;
         }
-
     }
     inline pair<size_t,size_t> maxRange( size_t index ) const{
         size_t meu_limite_esq = index;
@@ -133,25 +137,36 @@ struct PirateLand{
     }
     inline int pegaSomatorio( size_t index_raiz ) const{
         if( index_raiz >= nodes.size() )return 0;
-        int quanto_dentro = quantoDentro(maxRange(index_raiz));
-        
-        if( quanto_dentro == 2 ){
-            return nodes[index_raiz];
-        }else if( quanto_dentro == 1 ){
-            return pegaSomatorio(2*index_raiz+1) + pegaSomatorio(2*index_raiz+2);
-        }else{
-            return 0;
+        auto meu_range = maxRange(index_raiz);
+        int quanto_dentro = quantoDentro(meu_range);
+        switch(quanto_dentro){
+            case NO_INTERSECTION:
+                return 0;
+            case HALF_INSIDE:
+                return pegaSomatorio(2*index_raiz+1) + pegaSomatorio(2*index_raiz+2);
+            case FULL_INSIDE:
+                return nodes[index_raiz];
+            case FULL_OUTSIDE:
+                return pegaSomatorio(2*index_raiz+1) + pegaSomatorio(2*index_raiz+2);
         }
     }
-    inline void setaTudo1( size_t index_raiz ){
+    inline void setaTudo1( size_t index_raiz , bool ou_zero = false ){
         if( index_raiz >= nodes.size() )return;
         pair<size_t,size_t> max_range = maxRange(index_raiz);
         int quanto_dentro = quantoDentro(max_range);
-        if( quanto_dentro == 2 ){
-            nodes[index_raiz] = max_range.second - max_range.first + 1;
-        }else if( quanto_dentro == 1 ){
-            setaTudo1(2*index_raiz+1);
-            setaTudo1(2*index_raiz+2);
+        switch(quanto_dentro){
+            case HALF_INSIDE:
+                setaTudo1(2*index_raiz+1,ou_zero);
+                setaTudo1(2*index_raiz+2,ou_zero);
+                break;
+            case FULL_INSIDE:
+                nodes[index_raiz] = (max_range.second - max_range.first)*ou_zero;
+                consertaSubindo(index_raiz);
+                break;
+            case FULL_OUTSIDE:
+                setaTudo1(2*index_raiz+1,ou_zero);
+                setaTudo1(2*index_raiz+2,ou_zero);
+                break;
         }
     }
 
@@ -173,7 +188,6 @@ int main(){
     stringstream line_stream(line);
     int T;
     line_stream >> T;
-
     for( int test_case = 0 ; test_case < T ; test_case++ ){
         cout << "Case " << test_case + 1 << ":" << endl;
         PirateLand pirate_land;
