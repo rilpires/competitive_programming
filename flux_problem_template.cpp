@@ -13,7 +13,7 @@
 #include <math.h>
 #include <vector>
 #include <map>
-#include <queue>
+#include <stack>
 
 using namespace std;
 
@@ -25,18 +25,18 @@ struct Node {
     Node*               tree_parent = NULL;
 };
 
-// BFS any available path
+// DFS any available path
 vector<Node*>   get_any_available_path( Node* source , Node* destiny ) {
     short search_id = open_search_id ++;
-    queue<Node*> bfs_queue;
-    bfs_queue.push( source );
+    stack<Node*> dfs_stack;
+    dfs_stack.push( source );
 
     source->last_search_id = search_id;
     source->tree_parent = NULL;
     destiny->tree_parent = NULL;
-    while( bfs_queue.size() ){
-        Node* next_to_explore = bfs_queue.front();
-        bfs_queue.pop();
+    while( dfs_stack.size() ){
+        Node* next_to_explore = dfs_stack.top();
+        dfs_stack.pop();
         if( next_to_explore == destiny ){
             break;
         }
@@ -46,7 +46,7 @@ vector<Node*>   get_any_available_path( Node* source , Node* destiny ) {
                 if( edge.second > 0 && adjacent->last_search_id != search_id ){
                     adjacent->tree_parent = next_to_explore;
                     adjacent->last_search_id = search_id;
-                    bfs_queue.push(adjacent);
+                    dfs_stack.push(adjacent);
                 }
             }
         }
