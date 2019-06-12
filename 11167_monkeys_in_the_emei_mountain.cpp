@@ -221,9 +221,6 @@ int main(){
                     }
                     
                 }
-                sort( monkeys_in_this_interval.begin() , monkeys_in_this_interval.end() , [time_interval]( Monkey* m1 , Monkey* m2){
-                    return time_interval->adjacents[m1] > time_interval->adjacents[m2];
-                });
                 
                 int hour_it = time_interval->time_window.first;
                 
