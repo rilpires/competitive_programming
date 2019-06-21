@@ -7,68 +7,86 @@
     - Problem PDF:
         https://uva.onlinejudge.org/external/115/11566.pdf
 */
+
 #include <iostream>
-#include <string>
-#include <sstream>
 #include <math.h>
 #include <vector>
 #include <algorithm>
 
 using namespace std;
 
+#define MAX_ID_FOOD 103
+#define MAX_ORDERS 23
+#define MAX_MONEY_SPENT 1005
+
+int mem[MAX_ID_FOOD][MAX_ORDERS][MAX_MONEY_SPENT];
+
+
 int main(){
     int N,x,T,K,food_price,flavour;
     char result[64];
+    vector<int> food_prices , flavours;
+    
     while( cin >> N >> x >> T >> K ){
         if( N == 0 && x == 0 && T == 0 && K == 0 ) break;
         N += 1;
-
-        double total_money = x*N;
-        double available_money_after_charge = total_money *  0.90909090909;
-        double total_money_available_for_dim = available_money_after_charge - T*N; 
-        double available_money_for_dims = total_money_available_for_dim; 
+        
+        int available_money_for_food = floor(double(x*N) / 1.1L /** THIS motherfucker rIGHT HERE THIS 'L' IS THE DIFFERENCE BETWEEN 'WRONG ANSWER' AND 'ACCEPTED' im so angry **/ ) - T*N;
+        if( available_money_for_food < 0 ) available_money_for_food = 0;
         int available_dim_orders = 2*N;
 
-        vector<int> prices(K);
-        vector<int> flavours(K);
-        vector< pair<int,double> > flavour_per_money(K);
-
+        food_prices.resize(K);
+        flavours.resize(K);
         for( int food_index = 0 ; food_index < K ; food_index++ ){
             cin >> food_price;
-            prices[food_index] = food_price;
-            flavour_per_money[food_index] = pair<int,double>(food_index,0);
+            food_prices[food_index] = food_price;
             int flavour_sum = 0;
             for( int person_index = 0 ; person_index < N ; person_index++ ){
                 cin >> flavour;
                 flavour_sum += flavour;
             }
             flavours[food_index] = flavour_sum;
-            flavour_per_money[food_index].second = ((double)flavour_sum)/food_price ;
         }
 
-        // Sorting the by flavour/money ratio
-        sort( flavour_per_money.begin() , flavour_per_money.end() , [prices]( const pair<int,double>& p1 , const pair<int,double>& p2 ){
-            if( p2.second != p1.second )
-                return p2.second > p1.second;
-            else
-                return prices[p2.first] > prices[p1.first];
-        });
+        for( int x = 0 ; x <= K ; x++ )
+        for( int y = 0 ; y <= available_dim_orders ; y++ )
+        for( int z = 0 ; z <= available_money_for_food ; z++ )
+        {
+            mem[x][y][z] = 0;
+        }
 
+        
+        for( int order = 1 ; order <= available_dim_orders ; order++ )
+        for( int spent = food_prices[0] ; spent <= available_money_for_food ; spent++ )
+        mem[0][order][spent] = flavours[0];
+        
+        for( int order = 2 ; order <= available_dim_orders ; order++ )
+        for( int spent = 2*food_prices[0] ; spent <= available_money_for_food ; spent++ )
+        mem[0][order][spent] = 2*flavours[0];
 
-        int total_flavour_sum = 0;
-        for( auto it = flavour_per_money.begin() ; it != flavour_per_money.end() && available_dim_orders > 0 && available_money_for_dims > 0 ; it++ ){
-            //cout << "vendo um de flavour ratio " << it->second << endl;
-            for( int dim_amount = 0 ; dim_amount < 2 && available_dim_orders > 0 && available_money_for_dims > 0 ; dim_amount++ ){
-                int food_index = it->first;
-                if( available_money_for_dims >= prices[food_index] ){
-                    available_money_for_dims -= prices[food_index];
-                    available_dim_orders--;
-                    total_flavour_sum += flavours[food_index];
+        for( int food_index = 1 ; food_index <= K-1 ; food_index++ )
+        {
+            int price = food_prices[food_index];
+            int flavour = flavours[food_index];
+            for( int spent = 0 ; spent <= available_money_for_food ; spent++ )
+            for( int orders = 0 ; orders <=available_dim_orders ; orders++ ){
+
+                int new_value;
+                new_value = mem[food_index-1][orders][spent];
+
+                if( spent >= price && orders >= 1 && mem[food_index-1][orders-1][spent-price] + flavour > new_value  ){
+                    new_value = mem[food_index-1][orders-1][spent-price] + flavour;
                 }
-            }
-        }
+                if( spent >= 2*price && orders >= 2 && mem[food_index-1][orders-2][spent-2*price] + 2*flavour > new_value  ){
+                    new_value = mem[food_index-1][orders-2][spent-2*price] + 2*flavour;
+                }
+                
+                mem[food_index][orders][spent] = new_value;
 
-        sprintf( result , "%.2f" , ((double)total_flavour_sum)/N );
+            }
+
+        }
+        sprintf( result , "%.2lf" , ((double)mem[K-1][available_dim_orders][available_money_for_food])/((double)N) );
         cout << result << endl;
 
     }
