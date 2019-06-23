@@ -1,6 +1,6 @@
 /*
     Made by: Romeu I. L. Pires
-    for "Special topics in programming" course
+    for "Special bottomics in programming" course
     in UFRJ (Universidade Federal do Rio de Janeiro),
     on 2019.1 semester
 
@@ -17,73 +17,104 @@
 
 using namespace std;
 
-int mem[82][82];
+#define MAX_LEN 82
 
+int mem[MAX_LEN][MAX_LEN];
+char path[MAX_LEN][MAX_LEN];
 
 int min( int a , int b , int c ){
     return min( min(a,b) , c );
 }
 
 int main(){
-    ifstream cin("entrada.txt");
-    ofstream cout("saida.txt");
-    
     string str1, str2;
-    while( cin >> str1 >> str2 )
+    bool first = true;
+    while( getline(cin,str1) && getline(cin,str2) )
     {
+        
+        if( !first ) cout << endl;
+        first = false;
+
+        while( str1.front() == ' ' ) str1 = str1.substr(1,str1.size());
+        while( str2.front() == ' ' ) str2 = str2.substr(1,str2.size());
+        while( str1.back() == ' ' ) str1.pop_back();
+        while( str2.back() == ' ' ) str2.pop_back();
 
         // Levshtein
         // Filling the memory initially
-        for( int ind1 = 0 ; ind1 <= str1.size() ; ind1++ )
-        mem[ind1][0] = ind1;
-        for( int ind2 = 0 ; ind2 <= str2.size() ; ind2++ )
-        mem[0][ind2] = ind2;
+        for( int ind1 = 0 ; ind1 <= (int)str1.size() ; ind1++ ){
+            mem[ind1][0] = ind1;
+            path[ind1][0] = 'L';
+        }
+        for( int ind2 = 0 ; ind2 <= (int)str2.size() ; ind2++ ){
+            mem[0][ind2] = ind2;
+            path[0][ind2] = 'T';
+        }
+        vector<string> operations;
 
-        for( int ind1 = 1 ; ind1 <=  str1.size() ; ind1++ )
-        for( int ind2 = 1 ; ind2 <=  str2.size() ; ind2++ )
+        // Filling mem
+        for( int ind1 = 1 ; ind1 <=  (int)str1.size() ; ind1++ )
+        for( int ind2 = 1 ; ind2 <=  (int)str2.size() ; ind2++ )
         {
             if( str1[ind1-1] == str2[ind2-1] ){
                 mem[ind1][ind2] = mem[ind1-1][ind2-1];
+                path[ind1][ind2] = 'D'; // Came from diag
             } else {
                 mem[ind1][ind2] = 1 + min( mem[ind1-1][ind2-1] , mem[ind1-1][ind2] , mem[ind1][ind2-1] );
+                if( mem[ind1][ind2] - 1 == mem[ind1-1][ind2-1] ){
+                    path[ind1][ind2] = 'D'; // Came from diag
+                } else if ( mem[ind1][ind2] - 1 == mem[ind1-1][ind2] ){
+                    path[ind1][ind2] = 'L'; // Came from left
+                } else if ( mem[ind1][ind2] - 1 == mem[ind1][ind2-1] ){
+                    path[ind1][ind2] = 'T'; // Came from top
+                } 
             }
         }
 
         int result = mem[str1.size()][str2.size()];
-        cout << result << endl;
+        cout << result <<  endl;
 
+        vector< pair<int,int> > reversed_path;
+        // Finding reverse path
         int current_x = str1.size();
         int current_y = str2.size();
-        int n = result;
-        int order = 1;
-        while( n > 0 ){
-            int left = mem[current_x-1][current_y];
-            int top_left = mem[current_x-1][current_y-1];
-            int top = mem[current_x][current_y-1];
-            if( left == n-1 ){
-                // Erased
-                current_x--;
-                n--;
-                cout << order++ << " Delete " << current_x+1 << endl;;
-            } else if ( top_left == n-1 ){
-                // Replaced
-                current_x--;
-                current_y--;
-                n--;
-                cout << order++ << " Replace " << current_x+1 << "," << str2[current_y] << endl;
-            } else if ( top == n-1 ){
-                // Inserted
-                current_y--;
-                n--;
-                cout << order++ << " Insert " << current_x+1 << "," << str2[current_y] << endl;
-            } else {
-                if( top_left == n ){
+        while( mem[current_x][current_y] != 0 ){
+            reversed_path.push_back( pair<int,int>(current_x,current_y) );
+            switch( path[current_x][current_y] ){
+                case 'D':
                     current_x--;
                     current_y--;
-                } else cout << "uhhh\n";
+                    break;
+                case 'L':
+                    current_x--;
+                    break;
+                case 'T':
+                    current_y--;
+                    break;
+            }
+
+        }
+
+        // Printing path
+        int n = 0;
+        int order = 1;
+        int delta_pos = 0;
+        for( auto it = reversed_path.rbegin() ; it != reversed_path.rend() ; it++ ){
+            int x = it->first;
+            int y = it->second;
+            if( mem[x][y] == n+1 ){
+                n++;
+                if(path[x][y] == 'D'){
+                    cout << order++ << " Replace " << x + delta_pos << "," << str2[y-1] << endl;
+                }else if(path[x][y] == 'L'){
+                    cout << order++ << " Delete " << x + delta_pos << endl;
+                    delta_pos--;
+                }else if(path[x][y] == 'T'){
+                    cout << order++ << " Insert " << x+1 + delta_pos << "," << str2[y-1] << endl;
+                    delta_pos++;
+                }
             }
         }
-        cout << endl;
         
     }
 
