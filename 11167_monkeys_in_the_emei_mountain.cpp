@@ -221,9 +221,6 @@ int main(){
                     }
                     
                 }
-                sort( monkeys_in_this_interval.begin() , monkeys_in_this_interval.end() , [time_interval]( Monkey* m1 , Monkey* m2){
-                    return time_interval->adjacents[m1] > time_interval->adjacents[m2];
-                });
                 
                 int hour_it = time_interval->time_window.first;
                 
@@ -231,11 +228,9 @@ int main(){
                     int drinks_left_for_this_interval = time_interval->adjacents[monkey];
                     while( drinks_left_for_this_interval > 0 ){
                         Hour* hour = hours[ hour_it ];
-                        if( hour->drink_times_available > 0 ){
-                            hour->drink_times_available --;
-                            drinks_left_for_this_interval--;
-                            monkey->hours_used.push_back(hour_it);
-                        }
+                        hour->drink_times_available --;
+                        drinks_left_for_this_interval--;
+                        monkey->hours_used.push_back(hour_it);
                         hour_it = (hour_it+1);
                         if( hour_it >= time_interval->time_window.second ){
                             hour_it = time_interval->time_window.first;
